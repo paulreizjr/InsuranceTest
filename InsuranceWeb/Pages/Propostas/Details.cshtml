@@ -1,0 +1,100 @@
+@page
+@model InsuranceWeb.Pages.Propostas.DetailsModel
+@{
+    ViewData["Title"] = "Detalhes da Proposta";
+}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h1 class="h4 mb-0">@ViewData["Title"]</h1>
+                </div>
+                <div class="card-body">
+                    @if (Model.HasError)
+                    {
+                        <div class="alert alert-danger" role="alert">
+                            @Model.ErrorMessage
+                        </div>
+                    }
+                    else if (Model.Proposta != null)
+                    {
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6 class="text-muted">ID</h6>
+                                <p class="fw-bold">@Model.Proposta.Id</p>
+                            </div>
+                            <div class="col-md-6">
+                                <h6 class="text-muted">Status</h6>
+                                <p>
+                                    <span class="badge @Model.GetStatusBadgeClass(Model.Proposta.StatusProposta)">
+                                        @Model.GetStatusDisplayName(Model.Proposta.StatusProposta)
+                                    </span>
+                                </p>
+                            </div>
+                        </div>
+
+                        <hr />
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6 class="text-muted">@Html.DisplayNameFor(m => m.Proposta.Automovel)</h6>
+                                <p class="fw-bold">@Model.Proposta.Automovel</p>
+                            </div>
+                            <div class="col-md-6">
+                                <h6 class="text-muted">@Html.DisplayNameFor(m => m.Proposta.Condutor)</h6>
+                                <p class="fw-bold">@Model.Proposta.Condutor</p>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6 class="text-muted">@Html.DisplayNameFor(m => m.Proposta.ValorAutomovel)</h6>
+                                <p class="fw-bold text-success">@Model.Proposta.ValorAutomovel.ToString("C")</p>
+                            </div>
+                            <div class="col-md-6">
+                                <h6 class="text-muted">@Html.DisplayNameFor(m => m.Proposta.FatorPeso)</h6>
+                                <p class="fw-bold">@Model.Proposta.FatorPeso</p>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6 class="text-muted">@Html.DisplayNameFor(m => m.Proposta.ValorProposta)</h6>
+                                <p class="fw-bold text-primary fs-5">@Model.Proposta.ValorProposta.ToString("C")</p>
+                            </div>
+                            <div class="col-md-6">
+                                <h6 class="text-muted">@Html.DisplayNameFor(m => m.Proposta.DataAtualizacao)</h6>
+                                <p class="fw-bold">@Model.Proposta.DataAtualizacao.ToString("dd/MM/yyyy HH:mm:ss")</p>
+                            </div>
+                        </div>
+                    }
+
+                    <div class="d-flex justify-content-between mt-4">
+                        <a asp-page="./Index" class="btn btn-secondary">
+                            <i class="fa fa-arrow-left"></i> Voltar
+                        </a>
+                        @if (Model.Proposta != null)
+                        {
+                            <div>
+                                @if (Model.Proposta.StatusProposta == EStatusProposta.EmAnalise){
+                                    <a asp-page="./Edit" asp-route-id="@Model.Proposta.Id" class="btn btn-primary me-2">
+                                        <i class="fa fa-edit"></i> Editar
+                                    </a>
+                                    <a asp-page="./Delete" asp-route-id="@Model.Proposta.Id" class="btn btn-outline-danger">
+                                        <i class="fa fa-trash"></i> Excluir
+                                    </a>
+                                }
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+}

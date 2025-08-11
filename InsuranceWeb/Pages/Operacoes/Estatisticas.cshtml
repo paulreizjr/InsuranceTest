@@ -1,0 +1,202 @@
+@page
+@model InsuranceWeb.Pages.Operacoes.EstatisticasModel
+@{
+    ViewData["Title"] = "Estatísticas das Propostas";
+}
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h2">@ViewData["Title"]</h1>
+                <div>
+                    <a asp-page="./Index" class="btn btn-primary">
+                        <i class="fa fa-arrow-left"></i> Voltar para Operações
+                    </a>
+                </div>
+            </div>
+
+            @if (Model.HasError)
+            {
+                <div class="alert alert-danger" role="alert">
+                    @Model.ErrorMessage
+                </div>
+            }
+            else if (Model.Estatisticas != null)
+            {
+                <div class="row mb-4">
+                    <div class="col-md-3 mb-3">
+                        <div class="card text-center h-100 border-primary">
+                            <div class="card-body">
+                                <i class="fa fa-list fa-2x text-primary mb-2"></i>
+                                <h3 class="card-title text-primary">@Model.Estatisticas.Total</h3>
+                                <p class="card-text">Total de Propostas</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="card text-center h-100 border-warning">
+                            <div class="card-body">
+                                <i class="fa fa-clock fa-2x text-warning mb-2"></i>
+                                <h3 class="card-title text-warning">@Model.Estatisticas.EmAnalise</h3>
+                                <p class="card-text">Em Análise</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="card text-center h-100 border-success">
+                            <div class="card-body">
+                                <i class="fa fa-check fa-2x text-success mb-2"></i>
+                                <h3 class="card-title text-success">@Model.Estatisticas.Aprovadas</h3>
+                                <p class="card-text">Aprovadas</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="card text-center h-100 border-danger">
+                            <div class="card-body">
+                                <i class="fa fa-times fa-2x text-danger mb-2"></i>
+                                <h3 class="card-title text-danger">@Model.Estatisticas.Rejeitadas</h3>
+                                <p class="card-text">Rejeitadas</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">
+                                    <i class="fa fa-chart-pie"></i> Distribuição por Status
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                @if (Model.Estatisticas.Total > 0)
+                                {
+                                    <div class="progress mb-3" style="height: 25px;">
+                                        @{
+                                            var percentualEmAnalise = (double)Model.Estatisticas.EmAnalise / Model.Estatisticas.Total * 100;
+                                            var percentualAprovadas = (double)Model.Estatisticas.Aprovadas / Model.Estatisticas.Total * 100;
+                                            var percentualRejeitadas = (double)Model.Estatisticas.Rejeitadas / Model.Estatisticas.Total * 100;
+                                        }
+                                        
+                                        <div class="progress-bar bg-warning" role="progressbar" style="width: @percentualEmAnalise.ToString("F1", System.Globalization.CultureInfo.InvariantCulture)%" 
+                                             aria-valuenow="@Model.Estatisticas.EmAnalise" aria-valuemin="0" aria-valuemax="@Model.Estatisticas.Total">
+                                            @percentualEmAnalise.ToString("F1")%
+                                        </div>
+                                        <div class="progress-bar bg-success" role="progressbar" style="width: @percentualAprovadas.ToString("F1", System.Globalization.CultureInfo.InvariantCulture)%" 
+                                             aria-valuenow="@Model.Estatisticas.Aprovadas" aria-valuemin="0" aria-valuemax="@Model.Estatisticas.Total">
+                                            @percentualAprovadas.ToString("F1")%
+                                        </div>
+                                        <div class="progress-bar bg-danger" role="progressbar" style="width: @percentualRejeitadas.ToString("F1", System.Globalization.CultureInfo.InvariantCulture)%" 
+                                             aria-valuenow="@Model.Estatisticas.Rejeitadas" aria-valuemin="0" aria-valuemax="@Model.Estatisticas.Total">
+                                            @percentualRejeitadas.ToString("F1")%
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="row text-center">
+                                        <div class="col">
+                                            <small class="text-warning">Em Análise: @percentualEmAnalise.ToString("F1")%</small>
+                                        </div>
+                                        <div class="col">
+                                            <small class="text-success">Aprovadas: @percentualAprovadas.ToString("F1")%</small>
+                                        </div>
+                                        <div class="col">
+                                            <small class="text-danger">Rejeitadas: @percentualRejeitadas.ToString("F1")%</small>
+                                        </div>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <p class="text-muted">Nenhuma proposta cadastrada</p>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">
+                                    <i class="fa fa-info-circle"></i> Informações Adicionais
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <dl class="row">
+                                    <dt class="col-sm-8">Data da Consulta:</dt>
+                                    <dd class="col-sm-4">@Model.Estatisticas.DataConsulta.ToString("dd/MM/yyyy HH:mm:ss")</dd>
+                                    
+                                    <dt class="col-sm-8">Taxa de Aprovação:</dt>
+                                    <dd class="col-sm-4">
+                                        @if (Model.Estatisticas.Total > 0)
+                                        {
+                                            var taxaAprovacao = (double)Model.Estatisticas.Aprovadas / Model.Estatisticas.Total * 100;
+                                            <span class="text-success">@taxaAprovacao.ToString("F1")%</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">N/A</span>
+                                        }
+                                    </dd>
+                                    
+                                    <dt class="col-sm-8">Taxa de Rejeição:</dt>
+                                    <dd class="col-sm-4">
+                                        @if (Model.Estatisticas.Total > 0)
+                                        {
+                                            var taxaRejeicao = (double)Model.Estatisticas.Rejeitadas / Model.Estatisticas.Total * 100;
+                                            <span class="text-danger">@taxaRejeicao.ToString("F1")%</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">N/A</span>
+                                        }
+                                    </dd>
+                                </dl>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">
+                                    <i class="fa fa-tasks"></i> Ações Rápidas
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-3 mb-2">
+                                        <a asp-page="./Index" class="btn btn-warning w-100">
+                                            <i class="fa fa-clock"></i> Ver Propostas Pendentes (@Model.Estatisticas.EmAnalise)
+                                        </a>
+                                    </div>
+                                    <div class="col-md-3 mb-2">
+                                        <a asp-page="./Status" class="btn btn-info w-100">
+                                            <i class="fa fa-search"></i> Consultar Status
+                                        </a>
+                                    </div>
+                                    <div class="col-md-3 mb-2">
+                                        <a asp-page="/Propostas/Index" class="btn btn-primary w-100">
+                                            <i class="fa fa-list"></i> Ver Todas as Propostas
+                                        </a>
+                                    </div>
+                                    <div class="col-md-3 mb-2">
+                                        <a asp-page="/Propostas/Create" class="btn btn-success w-100">
+                                            <i class="fa fa-plus"></i> Nova Proposta
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+}

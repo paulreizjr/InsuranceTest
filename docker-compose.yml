@@ -1,0 +1,110 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: insurance-postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: insurance_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - insurance-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: insurance-rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: admin
+      RABBITMQ_DEFAULT_PASS: admin
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    networks:
+      - insurance-network
+    healthcheck:
+      test: ["CMD", "rabbitmqctl", "status"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  insurance-proposta-service:
+    build:
+      context: .
+      dockerfile: InsurancePropostaService/Dockerfile
+    container_name: insurance-proposta-service
+    ports:
+      - "5298:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:8080
+      - ConnectionStrings__DefaultConnection=Host=postgres;Database=insurance_db;Username=postgres;Password=postgres
+      - RabbitMQ__ConnectionString=amqp://admin:admin@rabbitmq:5672
+      - RabbitMQ__HostName=rabbitmq
+      - RabbitMQ__UserName=admin
+      - RabbitMQ__Password=admin
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - insurance-network
+    restart: unless-stopped
+
+  insurance-contratacao-service:
+    build:
+      context: .
+      dockerfile: InsuranceContratacaoService/Dockerfile
+    container_name: insurance-contratacao-service
+    ports:
+      - "5088:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:8080
+      - RabbitMQ__ConnectionString=amqp://admin:admin@rabbitmq:5672
+      - RabbitMQ__HostName=rabbitmq
+      - RabbitMQ__UserName=admin
+      - RabbitMQ__Password=admin
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - insurance-network
+    restart: unless-stopped
+
+  insurance-web:
+    build:
+      context: .
+      dockerfile: InsuranceWeb/Dockerfile
+    container_name: insurance-web
+    ports:
+      - "5155:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:8080
+      - InsurancePropostaService__BaseUrl=http://insurance-proposta-service:8080
+      - InsuranceContratacaoService__BaseUrl=http://insurance-contratacao-service:8080
+    depends_on:
+      - insurance-proposta-service
+      - insurance-contratacao-service
+    networks:
+      - insurance-network
+    restart: unless-stopped
+
+volumes:
+  rabbitmq_data:
+  postgres_data:
+
+networks:
+  insurance-network:
+    driver: bridge

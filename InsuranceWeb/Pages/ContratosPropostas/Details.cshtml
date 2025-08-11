@@ -1,0 +1,165 @@
+@page "{id}"
+@model InsuranceWeb.Pages.ContratosPropostas.DetailsModel
+@{
+    ViewData["Title"] = "Detalhes do Contrato de Proposta";
+}
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1>@ViewData["Title"]</h1>
+            <a asp-page="./Index" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Voltar
+            </a>
+        </div>
+
+        @if (Model.ContratoProposta != null)
+        {
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Contrato ID: @Model.ContratoProposta.Id</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6 class="text-muted">Informações do Contrato</h6>
+                            <table class="table table-sm">
+                                <tr>
+                                    <td><strong>Data Início Vigência:</strong></td>
+                                    <td>@Model.ContratoProposta.DataVigenciaInicio.ToString("dd/MM/yyyy")</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Data Fim Vigência:</strong></td>
+                                    <td>@Model.ContratoProposta.DataVigenciaFim.ToString("dd/MM/yyyy")</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Data de Atualização:</strong></td>
+                                    <td>@Model.ContratoProposta.DataAtualizacao.ToString("dd/MM/yyyy HH:mm:ss")</td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="text-muted">Status</h6>
+                            <span class="badge @GetStatusBadgeClass(Model.ContratoProposta.Proposta.StatusProposta) fs-6">
+                                @Model.ContratoProposta.Proposta.StatusProposta.ToString()
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Dados da Proposta</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <table class="table table-sm">
+                                <tr>
+                                    <td><strong>ID da Proposta:</strong></td>
+                                    <td>@Model.ContratoProposta.Proposta.Id</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Automóvel:</strong></td>
+                                    <td>@Model.ContratoProposta.Proposta.Automovel</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Valor do Automóvel:</strong></td>
+                                    <td>@Model.ContratoProposta.Proposta.ValorAutomovel.ToString("C")</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Fator Peso:</strong></td>
+                                    <td>@Model.ContratoProposta.Proposta.FatorPeso.ToString("F2")</td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="col-md-6">
+                            <table class="table table-sm">
+                                <tr>
+                                    <td><strong>Condutor:</strong></td>
+                                    <td>@Model.ContratoProposta.Proposta.Condutor</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Valor da Proposta:</strong></td>
+                                    <td>
+                                        <span class="fw-bold text-success">
+                                            @Model.ContratoProposta.Proposta.ValorProposta.ToString("C")
+                                        </span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Data de Atualização:</strong></td>
+                                    <td>@Model.ContratoProposta.Proposta.DataAtualizacao.ToString("dd/MM/yyyy HH:mm:ss")</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-between mt-4">
+                <a asp-page="./Index" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Voltar à Lista
+                </a>
+                <button type="button" class="btn btn-danger" onclick="confirmDelete('@Model.ContratoProposta.Id')">
+                    <i class="fas fa-trash"></i> Excluir Contrato
+                </button>
+            </div>
+        }
+        else
+        {
+            <div class="alert alert-warning" role="alert">
+                <h4 class="alert-heading">Contrato não encontrado</h4>
+                <p>O contrato de proposta solicitado não foi encontrado.</p>
+                <hr>
+                <a asp-page="./Index" class="btn btn-primary">Voltar à Lista</a>
+            </div>
+        }
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">Confirmar Exclusão</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Tem certeza que deseja excluir este contrato de proposta? Esta ação não pode ser desfeita.
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <form method="post" asp-page-handler="Delete" style="display: inline;">
+                    <input type="hidden" name="id" id="deleteId" value="" />
+                    <button type="submit" class="btn btn-danger">Excluir</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@functions {
+    private string GetStatusBadgeClass(InsuranceWeb.DTOs.EStatusProposta status)
+    {
+        return status switch
+        {
+            InsuranceWeb.DTOs.EStatusProposta.Pendente => "bg-warning text-dark",
+            InsuranceWeb.DTOs.EStatusProposta.Aprovada => "bg-success",
+            InsuranceWeb.DTOs.EStatusProposta.Rejeitada => "bg-danger",
+            _ => "bg-secondary"
+        };
+    }
+}
+
+@section Scripts {
+    <script>
+        function confirmDelete(id) {
+            document.getElementById('deleteId').value = id;
+            var deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
+            deleteModal.show();
+        }
+    </script>
+}

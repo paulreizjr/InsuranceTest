@@ -1,0 +1,100 @@
+@page
+@model InsuranceWeb.Pages.Operacoes.AprovarModel
+@{
+    ViewData["Title"] = "Aprovar Proposta";
+}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card border-success">
+                <div class="card-header bg-success text-white">
+                    <h1 class="h4 mb-0">@ViewData["Title"]</h1>
+                </div>
+                <div class="card-body">
+                    @if (Model.HasError)
+                    {
+                        <div class="alert alert-danger" role="alert">
+                            @Model.ErrorMessage
+                        </div>
+                    }
+
+                    @if (Model.Proposta != null)
+                    {
+                        <div class="alert alert-info" role="alert">
+                            <h5 class="alert-heading">Confirmar Aprovação</h5>
+                            <p>Você está prestes a aprovar a seguinte proposta:</p>
+                        </div>
+
+                        <!-- Proposta Details -->
+                        <div class="card mb-4 bg-light">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <h6 class="text-muted">ID da Proposta</h6>
+                                        <p class="fw-bold"><code>@Model.Proposta.Id</code></p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <h6 class="text-muted">Status Atual</h6>
+                                        <p>
+                                            <span class="badge bg-warning text-dark">
+                                                @Model.GetStatusDisplayName(Model.Proposta.StatusProposta)
+                                            </span>
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <h6 class="text-muted">Automóvel</h6>
+                                        <p class="fw-bold">@Model.Proposta.Automovel</p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <h6 class="text-muted">Condutor</h6>
+                                        <p class="fw-bold">@Model.Proposta.Condutor</p>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <h6 class="text-muted">Valor do Automóvel</h6>
+                                        <p class="fw-bold text-success">@Model.Proposta.ValorAutomovel.ToString("C")</p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <h6 class="text-muted">Valor da Proposta</h6>
+                                        <p class="fw-bold text-primary fs-5">@Model.Proposta.ValorProposta.ToString("C")</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Approval Form -->
+                        <form method="post">
+                            <input asp-for="AprovarDto.PropostaId" type="hidden" />
+                            
+                            <div class="mb-3">
+                                <label asp-for="AprovarDto.Comentario" class="form-label"></label>
+                                <textarea asp-for="AprovarDto.Comentario" class="form-control" rows="3" placeholder="Comentário opcional sobre a aprovação"></textarea>
+                                <span asp-validation-for="AprovarDto.Comentario" class="text-danger"></span>
+                            </div>
+
+                            <div class="d-flex justify-content-between mt-4">
+                                <a asp-page="./Index" class="btn btn-secondary">
+                                    <i class="fa fa-arrow-left"></i> Voltar
+                                </a>
+                                <button type="submit" class="btn btn-success btn-lg">
+                                    <i class="fa fa-check"></i> Confirmar Aprovação
+                                </button>
+                            </div>
+                        </form>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+}

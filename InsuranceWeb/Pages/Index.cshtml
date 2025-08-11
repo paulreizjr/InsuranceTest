@@ -1,0 +1,59 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Sistema de Seguros";
+}
+
+<div class="container mt-5">
+    <div class="text-center mb-5">
+        <h1 class="display-4">Sistema de Seguros</h1>
+        <p class="lead">Gerencie propostas de seguro de forma simples e eficiente</p>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="row">
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-body text-center">
+                            <i class="fa fa-file-text fa-3x text-primary mb-3"></i>
+                            <h5 class="card-title">Propostas</h5>
+                            <p class="card-text">Gerencie todas as propostas de seguro, desde a criação até a aprovação.</p>
+                            <a href="/Propostas" class="btn btn-primary">
+                                <i class="fa fa-arrow-right"></i> Acessar Propostas
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-body text-center">
+                            <i class="fa fa-tasks fa-3x text-warning mb-3"></i>
+                            <h5 class="card-title">Operações</h5>
+                            <p class="card-text">Aprove ou reprove propostas, gere contratos e visualize estatísticas.</p>
+                            <a href="/Operacoes" class="btn btn-warning">
+                                <i class="fa fa-arrow-right"></i> Acessar Operações
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-body text-center">
+                            <i class="fa fa-chart-bar fa-3x text-success mb-3"></i>
+                            <h5 class="card-title">Relatórios</h5>
+                            <p class="card-text">Visualize estatísticas e relatórios das propostas cadastradas.</p>
+                            <a href="#" class="btn btn-success">
+                                <i class="fa fa-arrow-right"></i> Em Breve
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+}

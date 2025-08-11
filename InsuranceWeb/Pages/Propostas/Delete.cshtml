@@ -1,0 +1,87 @@
+@page
+@model InsuranceWeb.Pages.Propostas.DeleteModel
+@{
+    ViewData["Title"] = "Excluir Proposta";
+}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card border-danger">
+                <div class="card-header bg-danger text-white">
+                    <h1 class="h4 mb-0">@ViewData["Title"]</h1>
+                </div>
+                <div class="card-body">
+                    @if (Model.HasError)
+                    {
+                        <div class="alert alert-danger" role="alert">
+                            @Model.ErrorMessage
+                        </div>
+                    }
+                    else if (Model.Proposta != null)
+                    {
+                        <div class="alert alert-warning" role="alert">
+                            <h5 class="alert-heading">Atenção!</h5>
+                            <p>Você tem certeza que deseja excluir esta proposta? Esta ação não pode ser desfeita.</p>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6 class="text-muted">ID</h6>
+                                <p class="fw-bold">@Model.Proposta.Id</p>
+                            </div>
+                            <div class="col-md-6">
+                                <h6 class="text-muted">Status</h6>
+                                <p>
+                                    <span class="badge @Model.GetStatusBadgeClass(Model.Proposta.StatusProposta)">
+                                        @Model.GetStatusDisplayName(Model.Proposta.StatusProposta)
+                                    </span>
+                                </p>
+                            </div>
+                        </div>
+
+                        <hr />
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6 class="text-muted">@Html.DisplayNameFor(m => m.Proposta.Automovel)</h6>
+                                <p class="fw-bold">@Model.Proposta.Automovel</p>
+                            </div>
+                            <div class="col-md-6">
+                                <h6 class="text-muted">@Html.DisplayNameFor(m => m.Proposta.Condutor)</h6>
+                                <p class="fw-bold">@Model.Proposta.Condutor</p>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6 class="text-muted">@Html.DisplayNameFor(m => m.Proposta.ValorAutomovel)</h6>
+                                <p class="fw-bold text-success">@Model.Proposta.ValorAutomovel.ToString("C")</p>
+                            </div>
+                            <div class="col-md-6">
+                                <h6 class="text-muted">@Html.DisplayNameFor(m => m.Proposta.ValorProposta)</h6>
+                                <p class="fw-bold text-primary">@Model.Proposta.ValorProposta.ToString("C")</p>
+                            </div>
+                        </div>
+
+                        <form method="post">
+                            <input asp-for="Proposta.Id" type="hidden" />
+                            <div class="d-flex justify-content-between mt-4">
+                                <a asp-page="./Index" class="btn btn-secondary">
+                                    <i class="fa fa-arrow-left"></i> Cancelar
+                                </a>
+                                <button type="submit" class="btn btn-danger">
+                                    <i class="fa fa-trash"></i> Confirmar Exclusão
+                                </button>
+                            </div>
+                        </form>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+}

@@ -1,0 +1,151 @@
+@page
+@model InsuranceWeb.Pages.Operacoes.IndexModel
+@{
+    ViewData["Title"] = "Operações de Propostas";
+}
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h2">@ViewData["Title"]</h1>
+                <div>
+                    <a asp-page="./Status" class="btn btn-info me-2">
+                        <i class="fa fa-search"></i> Consultar Status
+                    </a>
+                    <a asp-page="./Estatisticas" class="btn btn-outline-info me-2">
+                        <i class="fa fa-chart-bar"></i> Estatísticas
+                    </a>
+                    <a asp-page="/Propostas/Index" class="btn btn-outline-secondary">
+                        <i class="fa fa-list"></i> Todas as Propostas
+                    </a>
+                </div>
+            </div>
+
+            @if (Model.HasError)
+            {
+                <div class="alert alert-danger" role="alert">
+                    @Model.ErrorMessage
+                </div>
+            }
+
+            <div class="row mb-4">
+                <div class="col-md-2">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h5 class="card-title">@Model.Estatisticas.EmAnalise</h5>
+                            <p class="card-text text-warning">Pendentes de Análise</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h5 class="card-title">@Model.Estatisticas.Aprovadas</h5>
+                            <p class="card-text text-success">Aprovadas</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h5 class="card-title">@Model.Estatisticas.Rejeitadas</h5>
+                            <p class="card-text text-danger">Rejeitadas</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h5 class="card-title">@Model.Estatisticas.Contratadas</h5>
+                            <p class="card-text text-danger">Contratadas</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h5 class="card-title">@Model.Estatisticas.Total</h5>
+                            <p class="card-text text-primary">Total</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fa fa-clock text-warning"></i> Propostas Pendentes de Análise
+                    </h5>
+                </div>
+                <div class="card-body">
+                    @if (Model.PropostasPendentes?.Any() == true)
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-striped table-hover">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Automóvel</th>
+                                        <th>Condutor</th>
+                                        <th>Valor do Automóvel</th>
+                                        <th>Valor da Proposta</th>
+                                        <th>Data de Atualização</th>
+                                        <th>Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var proposta in Model.PropostasPendentes)
+                                    {
+                                        <tr>
+                                            <td>
+                                                <code>@proposta.Id</code>
+                                            </td>
+                                            <td>@proposta.Automovel</td>
+                                            <td>@proposta.Condutor</td>
+                                            <td>@proposta.ValorAutomovel.ToString("C")</td>
+                                            <td>@proposta.ValorProposta.ToString("C")</td>
+                                            <td>@proposta.DataAtualizacao.ToString("dd/MM/yyyy HH:mm")</td>
+                                            <td>
+                                                <div class="btn-group" role="group">
+                                                    <a asp-page="/Propostas/Details" asp-route-id="@proposta.Id" class="btn btn-sm btn-outline-info" title="Detalhes">
+                                                        <i class="fa fa-eye"></i>
+                                                    </a>
+                                                    <a asp-page="./Aprovar" asp-route-id="@proposta.Id" class="btn btn-sm btn-success" title="Aprovar">
+                                                        <i class="fa fa-check"></i> Aprovar
+                                                    </a>
+                                                    <a asp-page="./Reprovar" asp-route-id="@proposta.Id" class="btn btn-sm btn-danger" title="Reprovar">
+                                                        <i class="fa fa-times"></i> Reprovar
+                                                    </a>
+                                                    <a asp-page="./Status" asp-route-propostaId="@proposta.Id" class="btn btn-sm btn-outline-secondary" title="Consultar Status">
+                                                        <i class="fa fa-search"></i>
+                                                    </a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="alert alert-info" role="alert">
+                            <h4 class="alert-heading">Nenhuma proposta pendente</h4>
+                            <p>Não há propostas pendentes de análise no momento.</p>
+                            <hr>
+                            <p class="mb-0">
+                                <a asp-page="/Propostas/Index" class="alert-link">Visualizar todas as propostas</a> ou 
+                                <a asp-page="/Propostas/Create" class="alert-link">criar uma nova proposta</a>.
+                            </p>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+}

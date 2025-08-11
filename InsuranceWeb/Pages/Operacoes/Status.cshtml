@@ -1,0 +1,117 @@
+@page
+@model InsuranceWeb.Pages.Operacoes.StatusModel
+@{
+    ViewData["Title"] = "Consultar Status da Proposta";
+}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h1 class="h4 mb-0">@ViewData["Title"]</h1>
+                </div>
+                <div class="card-body">
+                    @if (Model.HasError)
+                    {
+                        <div class="alert alert-danger" role="alert">
+                            @Model.ErrorMessage
+                        </div>
+                    }
+
+                    <!-- Search Form -->
+                    <form method="get">
+                        <div class="row">
+                            <div class="col-md-8">
+                                <div class="mb-3">
+                                    <label for="propostaId" class="form-label">ID da Proposta</label>
+                                    <input type="text" asp-for="PropostaId" class="form-control" placeholder="Digite o ID da proposta" />
+                                    <span asp-validation-for="PropostaId" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label class="form-label">&nbsp;</label>
+                                    <button type="submit" class="btn btn-primary w-100">
+                                        <i class="fa fa-search"></i> Consultar Status
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+
+                    <!-- Status Result -->
+                    @if (Model.PropostaStatus != null && !string.IsNullOrEmpty(Model.PropostaStatus.Status))
+                    {
+                        <hr />
+                        <div class="card bg-light">
+                            <div class="card-body">
+                                <h5 class="card-title">
+                                    <i class="fa fa-info-circle"></i> Status da Proposta
+                                </h5>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <h6 class="text-muted">ID da Proposta</h6>
+                                        <p class="fw-bold"><code>@Model.PropostaStatus.PropostaId</code></p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <h6 class="text-muted">Status Atual</h6>
+                                        <p>
+                                            <span class="badge @Model.GetStatusBadgeClass(Model.PropostaStatus.Status)">
+                                                @Model.GetStatusDisplayName(Model.PropostaStatus.Status)
+                                            </span>
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <!-- Action Buttons Based on Status -->
+                                <div class="mt-3">
+                                    @if (Model.PropostaStatus.Status.Equals("EmAnalise", StringComparison.OrdinalIgnoreCase))
+                                    {
+                                        <div class="d-flex gap-2">
+                                            <a asp-page="./Aprovar" asp-route-id="@Model.PropostaStatus.PropostaId" class="btn btn-success">
+                                                <i class="fa fa-check"></i> Aprovar
+                                            </a>
+                                            <a asp-page="./Reprovar" asp-route-id="@Model.PropostaStatus.PropostaId" class="btn btn-danger">
+                                                <i class="fa fa-times"></i> Reprovar
+                                            </a>
+                                        </div>
+                                    }
+                                    else if (Model.PropostaStatus.Status.Equals("Aprovada", StringComparison.OrdinalIgnoreCase))
+                                    {
+                                        <a asp-page="./GerarContrato" asp-route-id="@Model.PropostaStatus.PropostaId" class="btn btn-primary">
+                                            <i class="fa fa-file-contract"></i> Gerar Contrato
+                                        </a>
+                                    }
+                                    else if (Model.PropostaStatus.Status.Equals("Rejeitada", StringComparison.OrdinalIgnoreCase))
+                                    {
+                                        <div class="alert alert-warning mb-0">
+                                            <i class="fa fa-exclamation-triangle"></i> Esta proposta foi rejeitada e não pode mais ser processada.
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    }
+
+                    <div class="d-flex justify-content-between mt-4">
+                        <a asp-page="./Index" class="btn btn-secondary">
+                            <i class="fa fa-arrow-left"></i> Voltar
+                        </a>
+                        @if (!string.IsNullOrEmpty(Model.PropostaId))
+                        {
+                            <a asp-page="/Propostas/Details" asp-route-id="@Model.PropostaId" class="btn btn-outline-info">
+                                <i class="fa fa-eye"></i> Ver Detalhes da Proposta
+                            </a>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+}

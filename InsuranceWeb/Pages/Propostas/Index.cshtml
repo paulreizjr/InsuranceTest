@@ -1,0 +1,97 @@
+@page
+@model InsuranceWeb.Pages.Propostas.IndexModel
+@{
+    ViewData["Title"] = "Propostas de Seguro";
+}
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h2">@ViewData["Title"]</h1>
+                <a asp-page="./Create" class="btn btn-primary">
+                    <i class="fa fa-plus"></i> Nova Proposta
+                </a>
+            </div>
+
+            @if (Model.HasError)
+            {
+                <div class="alert alert-danger" role="alert">
+                    @Model.ErrorMessage
+                </div>
+            }
+
+            @if (Model.Propostas?.Any() == true)
+            {
+                <div class="card">
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-striped table-hover">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th>Automóvel</th>
+                                        <th>Condutor</th>
+                                        <th>Valor do Automóvel</th>
+                                        <th>Valor da Proposta</th>
+                                        <th>Status</th>
+                                        <th>Data de Atualização</th>
+                                        <th>Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var proposta in Model.Propostas)
+                                    {
+                                        <tr>
+                                            <td>@proposta.Automovel</td>
+                                            <td>@proposta.Condutor</td>
+                                            <td>@proposta.ValorAutomovel.ToString("C")</td>
+                                            <td>@proposta.ValorProposta.ToString("C")</td>
+                                            <td>
+                                                <span class="badge @Model.GetStatusBadgeClass(proposta.StatusProposta)">
+                                                    @Model.GetStatusDisplayName(proposta.StatusProposta)
+                                                </span>
+                                            </td>
+                                            <td>@proposta.DataAtualizacao.ToString("dd/MM/yyyy HH:mm")</td>
+                                            <td>
+                                                <div class="btn-group" role="group">
+                                                    <a asp-page="./Details" asp-route-id="@proposta.Id" class="btn btn-sm btn-outline-info" title="Detalhes">
+                                                        <i class="fa fa-eye"></i>
+                                                    </a>
+                                                    @if (proposta.StatusProposta == EStatusProposta.EmAnalise){
+                                                        <a asp-page="./Edit" asp-route-id="@proposta.Id" class="btn btn-sm btn-outline-primary" title="Editar">
+                                                            <i class="fa fa-edit"></i>
+                                                        </a>
+                                                        <a asp-page="./Delete" asp-route-id="@proposta.Id" class="btn btn-sm btn-outline-danger" title="Excluir">
+                                                            <i class="fa fa-trash"></i>
+                                                        </a>
+                                                    }
+                                                    @if (proposta.StatusProposta == EStatusProposta.Aprovada)
+                                                    {
+                                                        <a href="/operacoes/status?PropostaId=@proposta.Id" class="btn btn-sm btn-outline-primary" title="Contratar">
+                                                            <i class="fa fa-file"></i>
+                                                        </a>
+                                                    }
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-info" role="alert">
+                    <h4 class="alert-heading">Nenhuma proposta encontrada</h4>
+                    <p>Não há propostas cadastradas no momento. <a asp-page="./Create" class="alert-link">Clique aqui para criar a primeira proposta</a>.</p>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+}

@@ -1,0 +1,103 @@
+@page
+@model InsuranceWeb.Pages.Operacoes.ReprovarModel
+@{
+    ViewData["Title"] = "Reprovar Proposta";
+}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card border-danger">
+                <div class="card-header bg-danger text-white">
+                    <h1 class="h4 mb-0">@ViewData["Title"]</h1>
+                </div>
+                <div class="card-body">
+                    @if (Model.HasError)
+                    {
+                        <div class="alert alert-danger" role="alert">
+                            @Model.ErrorMessage
+                        </div>
+                    }
+
+                    @if (Model.Proposta != null)
+                    {
+                        <div class="alert alert-warning" role="alert">
+                            <h5 class="alert-heading">Confirmar Reprovação</h5>
+                            <p>Você está prestes a reprovar a seguinte proposta. Esta ação é irreversível.</p>
+                        </div>
+
+                        <!-- Proposta Details -->
+                        <div class="card mb-4 bg-light">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <h6 class="text-muted">ID da Proposta</h6>
+                                        <p class="fw-bold"><code>@Model.Proposta.Id</code></p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <h6 class="text-muted">Status Atual</h6>
+                                        <p>
+                                            <span class="badge bg-warning text-dark">
+                                                @Model.GetStatusDisplayName(Model.Proposta.StatusProposta)
+                                            </span>
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <h6 class="text-muted">Automóvel</h6>
+                                        <p class="fw-bold">@Model.Proposta.Automovel</p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <h6 class="text-muted">Condutor</h6>
+                                        <p class="fw-bold">@Model.Proposta.Condutor</p>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <h6 class="text-muted">Valor do Automóvel</h6>
+                                        <p class="fw-bold text-success">@Model.Proposta.ValorAutomovel.ToString("C")</p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <h6 class="text-muted">Valor da Proposta</h6>
+                                        <p class="fw-bold text-primary fs-5">@Model.Proposta.ValorProposta.ToString("C")</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Rejection Form -->
+                        <form method="post">
+                            <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+                            
+                            <input asp-for="ReprovarDto.PropostaId" type="hidden" />
+                            
+                            <div class="mb-3">
+                                <label asp-for="ReprovarDto.MotivoReprovacao" class="form-label"></label>
+                                <textarea asp-for="ReprovarDto.MotivoReprovacao" class="form-control" rows="4" placeholder="Descreva o motivo da reprovação da proposta" required></textarea>
+                                <span asp-validation-for="ReprovarDto.MotivoReprovacao" class="text-danger"></span>
+                                <div class="form-text">Este campo é obrigatório e será registrado junto com a reprovação.</div>
+                            </div>
+
+                            <div class="d-flex justify-content-between mt-4">
+                                <a asp-page="./Index" class="btn btn-secondary">
+                                    <i class="fa fa-arrow-left"></i> Cancelar
+                                </a>
+                                <button type="submit" class="btn btn-danger btn-lg">
+                                    <i class="fa fa-times"></i> Confirmar Reprovação
+                                </button>
+                            </div>
+                        </form>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+}

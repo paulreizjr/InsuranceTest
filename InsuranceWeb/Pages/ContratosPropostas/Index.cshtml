@@ -1,0 +1,117 @@
+@page
+@model InsuranceWeb.Pages.ContratosPropostas.IndexModel
+@{
+    ViewData["Title"] = "Contratos de Propostas";
+}
+
+<div class="row">
+    <div class="col-md-12">
+        <h1>@ViewData["Title"]</h1>
+
+        @if (Model.ContratosPropostas?.Any() == true)
+        {
+            <div class="table-responsive">
+                <table class="table table-striped table-hover">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>ID</th>
+                            <th>Automóvel</th>
+                            <th>Condutor</th>
+                            <th>Status da Proposta</th>
+                            <th>Valor da Proposta</th>
+                            <th>Data Início Vigência</th>
+                            <th>Data Fim Vigência</th>
+                            <th>Data Atualização</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var contrato in Model.ContratosPropostas)
+                        {
+                            <tr>
+                                <td>
+                                    <a asp-page="./Details" asp-route-id="@contrato.Id" class="text-decoration-none">
+                                        @contrato.Id
+                                    </a>
+                                </td>
+                                <td>@contrato.Proposta.Automovel</td>
+                                <td>@contrato.Proposta.Condutor</td>
+                                <td>
+                                    <span class="badge @GetStatusBadgeClass(contrato.Proposta.StatusProposta)">
+                                        @contrato.Proposta.StatusProposta.ToString()
+                                    </span>
+                                </td>
+                                <td>@contrato.Proposta.ValorProposta.ToString("C")</td>
+                                <td>@contrato.DataVigenciaInicio.ToString("dd/MM/yyyy")</td>
+                                <td>@contrato.DataVigenciaFim.ToString("dd/MM/yyyy")</td>
+                                <td>@contrato.DataAtualizacao.ToString("dd/MM/yyyy HH:mm")</td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        <a asp-page="./Details" asp-route-id="@contrato.Id" class="btn btn-sm btn-outline-primary" title="Ver Detalhes">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        <button type="button" class="btn btn-sm btn-outline-danger" onclick="confirmDelete('@contrato.Id')" title="Excluir">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="alert alert-info" role="alert">
+                <h4 class="alert-heading">Nenhum contrato encontrado</h4>
+                <p>Não há contratos de propostas cadastrados no sistema.</p>
+            </div>
+        }
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">Confirmar Exclusão</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Tem certeza que deseja excluir este contrato de proposta?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <form method="post" asp-page-handler="Delete" style="display: inline;">
+                    <input type="hidden" name="id" id="deleteId" value="" />
+                    <button type="submit" class="btn btn-danger">Excluir</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@functions {
+    private string GetStatusBadgeClass(InsuranceWeb.DTOs.EStatusProposta status)
+    {
+        return status switch
+        {
+            InsuranceWeb.DTOs.EStatusProposta.Pendente => "bg-warning text-dark",
+            InsuranceWeb.DTOs.EStatusProposta.Aprovada => "bg-success",
+            InsuranceWeb.DTOs.EStatusProposta.Rejeitada => "bg-danger",
+            _ => "bg-secondary"
+        };
+    }
+}
+
+@section Scripts {
+    <script>
+        function confirmDelete(id) {
+            document.getElementById('deleteId').value = id;
+            var deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
+            deleteModal.show();
+        }
+    </script>
+}
