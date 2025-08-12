@@ -14,9 +14,7 @@ namespace InsuranceContratacaoService
             builder.Services.Configure<RabbitMQSettings>(
                 builder.Configuration.GetSection("RabbitMQ"));
 
-            // Register RabbitMQ infrastructure services
             builder.Services.AddSingleton<IRabbitMQInfrastructureService, RabbitMQInfrastructureService>();
-            builder.Services.AddHostedService<RabbitMQInfrastructureHostedService>();
 
             builder.Services.AddSingleton<IContratoPropostaMessagePublisher, ContratoPropostaMessagePublisher>();
 
@@ -37,6 +35,8 @@ namespace InsuranceContratacaoService
             app.UseAuthorization();
 
             app.MapControllers();
+
+            app.Services.GetRequiredService<IRabbitMQInfrastructureService>().SetupInfrastructure();
 
             app.Run();
         }

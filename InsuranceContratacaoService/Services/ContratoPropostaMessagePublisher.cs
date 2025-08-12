@@ -17,8 +17,6 @@ namespace InsuranceContratacaoService.Services
         private readonly RabbitMQSettings _settings;
         private readonly ConcurrentDictionary<string, TaskCompletionSource<EStatusProposta>> _pendingStatusRequests;
         private readonly ConcurrentDictionary<string, TaskCompletionSource<string>> _pendingContratoRequests;
-        private readonly string _responseStatusQueueName;
-        private readonly string _responseContratoQueueName;
         
         // Circuit breaker fields
         private int _consecutiveFailures = 0;
@@ -39,23 +37,13 @@ namespace InsuranceContratacaoService.Services
             _connection = factory.CreateConnection();
             _channel = _connection.CreateModel();
 
-            // Infrastructure setup is handled by RabbitMQInfrastructureService
-            // This publisher only creates temporary response queues and consumers
-
-            // Create temporary response queues for receiving responses
-            _responseStatusQueueName = _channel.QueueDeclare().QueueName;
-            _channel.QueueBind(_responseStatusQueueName, _settings.ExchangeName, "proposta.status.response");
-
-            _responseContratoQueueName = _channel.QueueDeclare().QueueName;
-            _channel.QueueBind(_responseContratoQueueName, _settings.ExchangeName, "gera.contrato.response");
-
             var statusConsumer = new EventingBasicConsumer(_channel);
             statusConsumer.Received += OnResponseStatusReceived;
-            _channel.BasicConsume(_responseStatusQueueName, true, statusConsumer);
+            _channel.BasicConsume(_settings.PropostaStatusResponseQueue, true, statusConsumer);
 
             var contratoConsumer = new EventingBasicConsumer(_channel);
             contratoConsumer.Received += OnResponseContratoReceived;
-            _channel.BasicConsume(_responseContratoQueueName, true, contratoConsumer);
+            _channel.BasicConsume(_settings.GeraContratoResponseQueue, true, contratoConsumer);
         }
 
         public async Task<EStatusProposta> getStatusPropostaFromService(string propostaId)
@@ -82,7 +70,7 @@ namespace InsuranceContratacaoService.Services
 
             var messageBody = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(request));
             var properties = _channel.CreateBasicProperties();
-            properties.ReplyTo = _responseStatusQueueName;
+            properties.ReplyTo = _settings.PropostaStatusResponseQueue;
             properties.CorrelationId = requestId;
 
             try
@@ -161,7 +149,7 @@ namespace InsuranceContratacaoService.Services
 
             var messageBody = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(request));
             var properties = _channel.CreateBasicProperties();
-            properties.ReplyTo = _responseContratoQueueName;
+            properties.ReplyTo = _settings.GeraContratoResponseQueue;
             properties.CorrelationId = requestId;
 
             try

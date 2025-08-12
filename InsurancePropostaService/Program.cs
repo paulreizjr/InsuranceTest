@@ -2,7 +2,6 @@
 using InsuranceCoreBusiness.Application.Ports.Inbound;
 using InsuranceCoreBusiness.Application.Ports.Outbound;
 using InsuranceCoreBusiness.Application.UseCases;
-using InsurancePropostaService.Infrastructure.Messaging;
 using InsurancePropostaService.Data;
 using InsurancePropostaService.Repositories;
 using InsurancePropostaService.Services;
@@ -40,10 +39,6 @@ namespace InsurancePropostaService
             // Configure RabbitMQ settings
             builder.Services.Configure<RabbitMQSettings>(
                 builder.Configuration.GetSection("RabbitMQ"));
-
-            // Register RabbitMQ infrastructure services
-            builder.Services.AddSingleton<IRabbitMQInfrastructureService, RabbitMQInfrastructureService>();
-            builder.Services.AddHostedService<RabbitMQInfrastructureHostedService>();
 
             // Register RabbitMQ consumer services
             builder.Services.AddHostedService<PropostaStatusConsumerService>();

@@ -33,9 +33,6 @@ namespace InsurancePropostaService.Services
 
             _connection = factory.CreateConnection();
             _channel = _connection.CreateModel();
-
-            // Infrastructure setup is handled by RabbitMQInfrastructureService
-            // This consumer only connects to existing queues
         }
 
         protected override Task ExecuteAsync(CancellationToken stoppingToken)
