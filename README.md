@@ -1,20 +1,19 @@
 # Aplicação de teste
 
-- Requisitos para rodar o sistema
-
-### Docker Requirements
+### Requisitos para rodar o sistema
 - **Docker Engine**: 20.10.0 or later
 - **Docker Compose**: 2.0.0 or later (Compose file format 3.8 compatible)
 
-- Veja o diagrama simples da solução: InsuranceSystem.jpg
+### Diagrama simples da solução
+- InsuranceSystem.jpg
 
 ### Iniciar o sistema usando PowerShell (Windows)
-```powershell - executar na raiz do repositório
+```powershell
 .\start-services.ps1
 ```
 
 ### Iniciar o sistema usando Bash (Linux/Mac/WSL)
-```bash - executar na raiz do repositório
+```bash
 chmod +x start-services.sh
 ./start-services.sh
 ```
